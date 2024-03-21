@@ -2,15 +2,6 @@ package dydx_test
 
 import (
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	"github.com/skip-mev/slinky/providers/apis/binance"
-	coinbaseapi "github.com/skip-mev/slinky/providers/apis/coinbase"
-	"github.com/skip-mev/slinky/providers/apis/kraken"
-	"github.com/skip-mev/slinky/providers/websockets/bybit"
-	coinbasews "github.com/skip-mev/slinky/providers/websockets/coinbase"
-	"github.com/skip-mev/slinky/providers/websockets/huobi"
-	"github.com/skip-mev/slinky/providers/websockets/kucoin"
-	"github.com/skip-mev/slinky/providers/websockets/mexc"
-	"github.com/skip-mev/slinky/providers/websockets/okx"
 	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
 )
 
@@ -78,445 +69,448 @@ const dYdXResponseInvalid = `
 
 var convertedResponse = mmtypes.GetMarketMapResponse{
 	MarketMap: mmtypes.MarketMap{
-		Tickers: map[string]mmtypes.Ticker{
+		Markets: map[string]mmtypes.Market{
 			"BTC/USD": {
-				CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USD"),
-				Decimals:         5,
-				MinProviderCount: 3,
+				Ticker: mmtypes.Ticker{
+					CurrencyPair:     slinkytypes.NewCurrencyPair("BTC", "USD"),
+					Decimals:         5,
+					MinProviderCount: 3,
+				},
+				Paths: mmtypes.Paths{
+					Paths: []mmtypes.Path{
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "binance_api",
+									CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
+									Invert:       false,
+								},
+								{
+									Provider:     mmtypes.IndexPrice,
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       false,
+								},
+							},
+						},
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "bybit_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
+									Invert:       false,
+								},
+								{
+									Provider:     mmtypes.IndexPrice,
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       false,
+								},
+							},
+						},
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "coinbase_api",
+									CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
+									Invert:       false,
+								},
+							},
+						},
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "coinbase_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
+									Invert:       false,
+								},
+							},
+						},
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "huobi_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
+									Invert:       false,
+								},
+								{
+									Provider:     mmtypes.IndexPrice,
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       false,
+								},
+							},
+						},
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "kraken_api",
+									CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
+									Invert:       false,
+								},
+							},
+						},
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "kucoin_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
+									Invert:       false,
+								},
+								{
+									Provider:     mmtypes.IndexPrice,
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       false,
+								},
+							},
+						},
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "mexc_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
+									Invert:       false,
+								},
+								{
+									Provider:     mmtypes.IndexPrice,
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       false,
+								},
+							},
+						},
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "okx_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
+									Invert:       false,
+								},
+								{
+									Provider:     mmtypes.IndexPrice,
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       false,
+								},
+							},
+						},
+					},
+				},
+				Providers: mmtypes.Providers{
+					Providers: []mmtypes.ProviderConfig{
+						{
+							Name:           "binance_api",
+							OffChainTicker: "BTCUSDT",
+						},
+						{
+							Name:           "bybit_ws",
+							OffChainTicker: "BTCUSDT",
+						},
+						{
+							Name:           "coinbase_api",
+							OffChainTicker: "BTC-USD",
+						},
+						{
+							Name:           "coinbase_ws",
+							OffChainTicker: "BTC-USD",
+						},
+						{
+							Name:           "huobi_ws",
+							OffChainTicker: "btcusdt",
+						},
+						{
+							Name:           "kraken_api",
+							OffChainTicker: "XXBTZUSD",
+						},
+						{
+							Name:           "kucoin_ws",
+							OffChainTicker: "BTC-USDT",
+						},
+						{
+							Name:           "mexc_ws",
+							OffChainTicker: "BTCUSDT",
+						},
+						{
+							Name:           "okx_ws",
+							OffChainTicker: "BTC-USDT",
+						},
+					},
+				},
 			},
+
 			"ETH/USD": {
-				CurrencyPair:     slinkytypes.NewCurrencyPair("ETH", "USD"),
-				Decimals:         6,
-				MinProviderCount: 3,
-			},
-			"USDT/USD": {
-				CurrencyPair:     slinkytypes.NewCurrencyPair("USDT", "USD"),
-				Decimals:         9,
-				MinProviderCount: 3,
-			},
-		},
-		Providers: map[string]mmtypes.Providers{
-			"BTC/USD": {
-				Providers: []mmtypes.ProviderConfig{
-					{
-						Name:           binance.Name,
-						OffChainTicker: "BTCUSDT",
-					},
-					{
-						Name:           bybit.Name,
-						OffChainTicker: "BTCUSDT",
-					},
-					{
-						Name:           coinbaseapi.Name,
-						OffChainTicker: "BTC-USD",
-					},
-					{
-						Name:           coinbasews.Name,
-						OffChainTicker: "BTC-USD",
-					},
-					{
-						Name:           huobi.Name,
-						OffChainTicker: "btcusdt",
-					},
-					{
-						Name:           kraken.Name,
-						OffChainTicker: "XXBTZUSD",
-					},
-					{
-						Name:           kucoin.Name,
-						OffChainTicker: "BTC-USDT",
-					},
-					{
-						Name:           mexc.Name,
-						OffChainTicker: "BTCUSDT",
-					},
-					{
-						Name:           okx.Name,
-						OffChainTicker: "BTC-USDT",
-					},
+				Ticker: mmtypes.Ticker{
+					CurrencyPair:     slinkytypes.NewCurrencyPair("ETH", "USD"),
+					Decimals:         6,
+					MinProviderCount: 3,
 				},
-			},
-			"ETH/USD": {
-				Providers: []mmtypes.ProviderConfig{
-					{
-						Name:           binance.Name,
-						OffChainTicker: "ETHUSDT",
-					},
-					{
-						Name:           bybit.Name,
-						OffChainTicker: "ETHUSDT",
-					},
-					{
-						Name:           coinbaseapi.Name,
-						OffChainTicker: "ETH-USD",
-					},
-					{
-						Name:           coinbasews.Name,
-						OffChainTicker: "ETH-USD",
-					},
-					{
-						Name:           huobi.Name,
-						OffChainTicker: "ethusdt",
-					},
-					{
-						Name:           kraken.Name,
-						OffChainTicker: "XETHZUSD",
-					},
-					{
-						Name:           kucoin.Name,
-						OffChainTicker: "ETH-USDT",
-					},
-					{
-						Name:           mexc.Name,
-						OffChainTicker: "ETHUSDT",
-					},
-					{
-						Name:           okx.Name,
-						OffChainTicker: "ETH-USDT",
-					},
-				},
-			},
-			"USDT/USD": {
-				Providers: []mmtypes.ProviderConfig{
-					{
-						Name:           binance.Name,
-						OffChainTicker: "USDCUSDT",
-					},
-					{
-						Name:           bybit.Name,
-						OffChainTicker: "USDCUSDT",
-					},
-					{
-						Name:           coinbaseapi.Name,
-						OffChainTicker: "USDT-USD",
-					},
-					{
-						Name:           coinbasews.Name,
-						OffChainTicker: "USDT-USD",
-					},
-					{
-						Name:           kraken.Name,
-						OffChainTicker: "USDTZUSD",
-					},
-					{
-						Name:           okx.Name,
-						OffChainTicker: "USDC-USDT",
-					},
-				},
-			},
-		},
-		Paths: map[string]mmtypes.Paths{
-			"BTC/USD": {
-				Paths: []mmtypes.Path{
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     binance.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
-							},
+				Providers: mmtypes.Providers{
+					Providers: []mmtypes.ProviderConfig{
+						{
+							Name:           "binance_api",
+							OffChainTicker: "ETHUSDT",
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     bybit.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
-							},
+						{
+							Name:           "bybit_ws",
+							OffChainTicker: "ETHUSDT",
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     coinbaseapi.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
-								Invert:       false,
-							},
+						{
+							Name:           "coinbase_api",
+							OffChainTicker: "ETH-USD",
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     coinbasews.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
-								Invert:       false,
-							},
+						{
+							Name:           "coinbase_ws",
+							OffChainTicker: "ETH-USD",
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     huobi.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
-							},
+						{
+							Name:           "huobi_ws",
+							OffChainTicker: "ethusdt",
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     kraken.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
-								Invert:       false,
-							},
+						{
+							Name:           "kraken_api",
+							OffChainTicker: "XETHZUSD",
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     kucoin.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
-							},
+						{
+							Name:           "kucoin_ws",
+							OffChainTicker: "ETH-USDT",
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     mexc.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
-							},
+						{
+							Name:           "mexc_ws",
+							OffChainTicker: "ETHUSDT",
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     okx.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
-							},
+						{
+							Name:           "okx_ws",
+							OffChainTicker: "ETH-USDT",
 						},
 					},
 				},
-			},
-			"ETH/USD": {
-				Paths: []mmtypes.Path{
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     binance.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
-							},
-						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     bybit.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
+				Paths: mmtypes.Paths{
+					Paths: []mmtypes.Path{
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "binance_api",
+									CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
+									Invert:       false,
+								},
+								{
+									Provider:     mmtypes.IndexPrice,
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       false,
+								},
 							},
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     coinbaseapi.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
-								Invert:       false,
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "bybit_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
+									Invert:       false,
+								},
+								{
+									Provider:     mmtypes.IndexPrice,
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       false,
+								},
 							},
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     coinbasews.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
-								Invert:       false,
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "coinbase_api",
+									CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
+									Invert:       false,
+								},
 							},
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     huobi.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "coinbase_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
+									Invert:       false,
+								},
 							},
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     kraken.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
-								Invert:       false,
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "huobi_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
+									Invert:       false,
+								},
+								{
+									Provider:     mmtypes.IndexPrice,
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       false,
+								},
 							},
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     kucoin.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "kraken_api",
+									CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
+									Invert:       false,
+								},
 							},
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     mexc.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
-								Invert:       false,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "kucoin_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
+									Invert:       false,
+								},
+								{
+									Provider:     mmtypes.IndexPrice,
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       false,
+								},
 							},
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     okx.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
-								Invert:       false,
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "mexc_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
+									Invert:       false,
+								},
+								{
+									Provider:     mmtypes.IndexPrice,
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       false,
+								},
 							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
+						},
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "okx_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
+									Invert:       false,
+								},
+								{
+									Provider:     mmtypes.IndexPrice,
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       false,
+								},
 							},
 						},
 					},
 				},
 			},
 			"USDT/USD": {
-				Paths: []mmtypes.Path{
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     binance.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       true,
-							},
+				Ticker: mmtypes.Ticker{
+					CurrencyPair:     slinkytypes.NewCurrencyPair("USDT", "USD"),
+					Decimals:         9,
+					MinProviderCount: 3,
+				},
+				Providers: mmtypes.Providers{
+					Providers: []mmtypes.ProviderConfig{
+						{
+							Name:           "binance_api",
+							OffChainTicker: "USDCUSDT",
+						},
+						{
+							Name:           "bybit_ws",
+							OffChainTicker: "USDCUSDT",
+						},
+						{
+							Name:           "coinbase_api",
+							OffChainTicker: "USDT-USD",
+						},
+						{
+							Name:           "coinbase_ws",
+							OffChainTicker: "USDT-USD",
+						},
+						{
+							Name:           "kraken_api",
+							OffChainTicker: "USDTZUSD",
+						},
+						{
+							Name:           "okx_ws",
+							OffChainTicker: "USDC-USDT",
 						},
 					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     bybit.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       true,
+				},
+				Paths: mmtypes.Paths{
+					Paths: []mmtypes.Path{
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "binance_api",
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       true,
+								},
 							},
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     coinbaseapi.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "bybit_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       true,
+								},
 							},
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     coinbasews.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "coinbase_api",
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       false,
+								},
 							},
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     huobi.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
-								Invert:       true,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
-								Invert:       false,
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "coinbase_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       false,
+								},
 							},
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     kraken.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       false,
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "huobi_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
+									Invert:       true,
+								},
+								{
+									Provider:     mmtypes.IndexPrice,
+									CurrencyPair: slinkytypes.NewCurrencyPair("ETH", "USD"),
+									Invert:       false,
+								},
 							},
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     kucoin.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
-								Invert:       true,
-							},
-							{
-								Provider:     mmtypes.IndexPrice,
-								CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
-								Invert:       false,
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "kraken_api",
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       false,
+								},
 							},
 						},
-					},
-					{
-						Operations: []mmtypes.Operation{
-							{
-								Provider:     okx.Name,
-								CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
-								Invert:       true,
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "kucoin_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
+									Invert:       true,
+								},
+								{
+									Provider:     mmtypes.IndexPrice,
+									CurrencyPair: slinkytypes.NewCurrencyPair("BTC", "USD"),
+									Invert:       false,
+								},
+							},
+						},
+						{
+							Operations: []mmtypes.Operation{
+								{
+									Provider:     "okx_ws",
+									CurrencyPair: slinkytypes.NewCurrencyPair("USDT", "USD"),
+									Invert:       true,
+								},
 							},
 						},
 					},

@@ -18,11 +18,11 @@ func TestGetTickerFromOperation(t *testing.T) {
 		require.NoError(t, err)
 
 		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
+			CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 		}
 		ticker, err := m.GetTickerFromOperation(operation)
 		require.NoError(t, err)
-		require.Equal(t, BTC_USD, ticker)
+		require.Equal(t, BTC_USD.Ticker, ticker)
 	})
 
 	t.Run("has ticker not included in the market config", func(t *testing.T) {
@@ -56,7 +56,7 @@ func TestGetProviderPrice(t *testing.T) {
 
 		// Attempt to retrieve the provider.
 		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
+			CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 			Provider:     coinbase.Name,
 		}
 		_, err = m.GetProviderPrice(operation)
@@ -64,7 +64,7 @@ func TestGetProviderPrice(t *testing.T) {
 
 		// Attempt to retrieve the index price.
 		operation = mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
+			CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 			Provider:     mmtypes.IndexPrice,
 		}
 		_, err = m.GetProviderPrice(operation)
@@ -77,13 +77,13 @@ func TestGetProviderPrice(t *testing.T) {
 
 		// Set the provider price.
 		prices := types.TickerPrices{
-			BTC_USD: createPrice(100, BTC_USD.Decimals),
+			BTC_USD.Ticker: createPrice(100, BTC_USD.Ticker.Decimals),
 		}
 		m.DataAggregator.SetProviderData(coinbase.Name, prices)
 
 		// Attempt to retrieve the provider.
 		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
+			CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 			Provider:     coinbase.Name,
 		}
 		price, err := m.GetProviderPrice(operation)
@@ -92,7 +92,7 @@ func TestGetProviderPrice(t *testing.T) {
 
 		// Attempt to retrieve the index price.
 		operation = mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
+			CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 			Provider:     mmtypes.IndexPrice,
 		}
 		_, err = m.GetProviderPrice(operation)
@@ -105,7 +105,7 @@ func TestGetProviderPrice(t *testing.T) {
 
 		// Set the provider price.
 		prices := types.TickerPrices{
-			BTC_USD: createPrice(100, BTC_USD.Decimals),
+			BTC_USD.Ticker: createPrice(100, BTC_USD.Ticker.Decimals),
 		}
 		m.DataAggregator.SetProviderData(coinbase.Name, prices)
 
@@ -114,7 +114,7 @@ func TestGetProviderPrice(t *testing.T) {
 
 		// Attempt to retrieve the provider.
 		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
+			CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 			Provider:     coinbase.Name,
 		}
 		price, err := m.GetProviderPrice(operation)
@@ -123,7 +123,7 @@ func TestGetProviderPrice(t *testing.T) {
 
 		// Attempt to retrieve the index price.
 		operation = mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
+			CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 			Provider:     mmtypes.IndexPrice,
 		}
 		price, err = m.GetProviderPrice(operation)
@@ -137,13 +137,13 @@ func TestGetProviderPrice(t *testing.T) {
 
 		// Set the provider price.
 		prices := types.TickerPrices{
-			BTC_USD: createPrice(40_000, BTC_USD.Decimals),
+			BTC_USD.Ticker: createPrice(40_000, BTC_USD.Ticker.Decimals),
 		}
 		m.DataAggregator.SetProviderData(coinbase.Name, prices)
 
 		// Attempt to retrieve the provider.
 		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
+			CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 			Provider:     coinbase.Name,
 		}
 		price, err := m.GetProviderPrice(operation)
@@ -157,13 +157,13 @@ func TestGetProviderPrice(t *testing.T) {
 
 		// Set the provider price.
 		prices := types.TickerPrices{
-			BTC_USD: createPrice(40_000, BTC_USD.Decimals),
+			BTC_USD.Ticker: createPrice(40_000, BTC_USD.Ticker.Decimals),
 		}
 		m.DataAggregator.SetProviderData(coinbase.Name, prices)
 
 		// Attempt to retrieve the provider.
 		operation := mmtypes.Operation{
-			CurrencyPair: BTC_USD.CurrencyPair,
+			CurrencyPair: BTC_USD.Ticker.CurrencyPair,
 			Provider:     coinbase.Name,
 			Invert:       true,
 		}

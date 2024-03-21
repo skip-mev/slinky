@@ -28,9 +28,7 @@ func TestConvertMarketParamsToMarketMap(t *testing.T) {
 			params: dydxtypes.QueryAllMarketParamsResponse{},
 			expected: mmtypes.GetMarketMapResponse{
 				MarketMap: mmtypes.MarketMap{
-					Tickers:         make(map[string]mmtypes.Ticker),
-					Providers:       make(map[string]mmtypes.Providers),
-					Paths:           make(map[string]mmtypes.Paths),
+					Markets:         make(map[string]mmtypes.Market),
 					AggregationType: mmtypes.AggregationType_INDEX_PRICE_AGGREGATION,
 				},
 			},
@@ -72,14 +70,11 @@ func TestConvertMarketParamsToMarketMap(t *testing.T) {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				require.Equal(t, len(tc.expected.MarketMap.Tickers), len(resp.MarketMap.Tickers))
-				require.Equal(t, tc.expected.MarketMap.Tickers, resp.MarketMap.Tickers)
+				for _, market := range tc.expected.MarketMap.Markets {
+					require.Equal(t, market, resp.MarketMap.Markets[market.Ticker.String()])
+				}
 
-				require.Equal(t, len(tc.expected.MarketMap.Providers), len(resp.MarketMap.Providers))
-				require.Equal(t, tc.expected.MarketMap.Providers, resp.MarketMap.Providers)
-
-				require.Equal(t, len(tc.expected.MarketMap.Paths), len(resp.MarketMap.Paths))
-				require.Equal(t, tc.expected.MarketMap.Paths, resp.MarketMap.Paths)
+				require.Equal(t, tc.expected.MarketMap.Markets, resp.MarketMap.Markets)
 			}
 		})
 	}

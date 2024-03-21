@@ -41,13 +41,19 @@ func (ms msgServer) CreateMarkets(goCtx context.Context, msg *types.MsgCreateMar
 	}
 
 	// create markets
-	for _, market := range msg.CreateMarkets {
-		err = ms.k.CreateMarket(ctx, market.Ticker, market.Paths, market.Providers)
+	for _, createMarket := range msg.CreateMarkets {
+		market := types.Market{
+			Ticker:    createMarket.Ticker,
+			Paths:     createMarket.Paths,
+			Providers: createMarket.Providers,
+		}
+
+		err = ms.k.CreateMarket(ctx, market)
 		if err != nil {
 			return nil, err
 		}
 
-		err = ms.k.hooks.AfterMarketCreated(ctx, market.Ticker)
+		err = ms.k.hooks.AfterMarketCreated(ctx, market)
 		if err != nil {
 			return nil, fmt.Errorf("unable to handle hook for ticker %s: %w", market.Ticker.String(), err)
 		}
@@ -92,12 +98,12 @@ func (ms msgServer) UpdateMarkets(goCtx context.Context, msg *types.MsgUpdateMar
 	}
 
 	for _, market := range msg.UpdateMarkets {
-		err = ms.k.UpdateMarket(ctx, market.Ticker, market.Paths, market.Providers)
+		err = ms.k.UpdateMarket(ctx, market)
 		if err != nil {
 			return nil, err
 		}
 
-		err = ms.k.hooks.AfterMarketUpdated(ctx, market.Ticker)
+		err = ms.k.hooks.AfterMarketUpdated(ctx, market)
 		if err != nil {
 			return nil, fmt.Errorf("unable to handle hook for ticker %s: %w", market.Ticker.String(), err)
 		}

@@ -118,28 +118,28 @@ var (
 		// -----------------------------------------------------------	//
 		// ---------------------Start API Providers--------------------	//
 		// -----------------------------------------------------------	//
-		binance.Name:       binance.DefaultNonUSMarketConfig,
-		coinbaseapi.Name:   coinbaseapi.DefaultMarketConfig,
-		coingecko.Name:     coingecko.DefaultMarketConfig,
-		geckoterminal.Name: geckoterminal.DefaultETHMarketConfig,
-		krakenapi.Name:     krakenapi.DefaultMarketConfig,
+		binance.Name:       binance.DefaultNonUSProviderConfig,
+		coinbaseapi.Name:   coinbaseapi.DefaultProviderConfig,
+		coingecko.Name:     coingecko.DefaultProviderConfig,
+		geckoterminal.Name: geckoterminal.DefaultETHProviderConfig,
+		krakenapi.Name:     krakenapi.DefaultProviderConfig,
 		// // -----------------------------------------------------------	//
 		// // ---------------------Start WebSocket Providers--------------	//
 		// // -----------------------------------------------------------	//
-		bitfinex.Name:     bitfinex.DefaultMarketConfig,
-		bitstamp.Name:     bitstamp.DefaultMarketConfig,
-		bybit.Name:        bybit.DefaultMarketConfig,
-		coinbasews.Name:   coinbasews.DefaultMarketConfig,
-		cryptodotcom.Name: cryptodotcom.DefaultMarketConfig,
-		gate.Name:         gate.DefaultMarketConfig,
-		huobi.Name:        huobi.DefaultMarketConfig,
-		kraken.Name:       kraken.DefaultMarketConfig,
-		kucoin.Name:       kucoin.DefaultMarketConfig,
-		mexc.Name:         mexc.DefaultMarketConfig,
-		okx.Name:          okx.DefaultMarketConfig,
+		bitfinex.Name:     bitfinex.DefaultProviderConfig,
+		bitstamp.Name:     bitstamp.DefaultProviderConfig,
+		bybit.Name:        bybit.DefaultProviderConfig,
+		coinbasews.Name:   coinbasews.DefaultProviderConfig,
+		cryptodotcom.Name: cryptodotcom.DefaultProviderConfig,
+		gate.Name:         gate.DefaultProviderConfig,
+		huobi.Name:        huobi.DefaultProviderConfig,
+		kraken.Name:       kraken.DefaultProviderConfig,
+		kucoin.Name:       kucoin.DefaultProviderConfig,
+		mexc.Name:         mexc.DefaultProviderConfig,
+		okx.Name:          okx.DefaultProviderConfig,
 	}
 
-	// LocalConfig defines a readable config for local development. Any changes to this
+	// LocalOracleConfig defines a readable config for local development. Any changes to this
 	// file should be reflected in oracle.json. To update the oracle.json file, run
 	// `make update-local-config`. This will update any changes to the oracle.json file
 	// as they are made to this file.
@@ -256,19 +256,19 @@ var (
 func main() {
 	flag.Parse()
 
-	// Create the oracle config that contains all of the providers that are supported.
+	// Create the oracle config that contains all providers that are supported.
 	if err := createOracleConfig(); err != nil {
 		panic(err)
 	}
 
-	// Create the market map that contains all of the tickers and providers that are
+	// Create the market map that contains all tickers and providers that are
 	// supported.
 	if err := createMarketMap(); err != nil {
 		panic(err)
 	}
 }
 
-// createOracleConfig creates an oracle config given all of the local provider configurations.
+// createOracleConfig creates an oracle config given all local provider configurations.
 func createOracleConfig() error {
 	// If the providers is not empty, filter the providers to include only the
 	// providers that are specified.
@@ -343,7 +343,7 @@ func createOracleConfig() error {
 	return nil
 }
 
-// createMarketMap creates a market map given all of the local market configurations for
+// createMarketMap creates a market map given all local market configurations for
 // each provider as well as the custom conversion markets. We do so to ensure that the
 // oracle is always started using the market map that is expected to be stored by the
 // market map module.
@@ -356,45 +356,38 @@ func createMarketMap() error {
 		return nil
 	}
 
-	var (
-		// Tickers defines a map of tickers to their respective ticker configurations. This
-		// contains all of the tickers that are supported by the oracle.
-		tickers = make(map[string]mmtypes.Ticker)
-		// TickersToProviders defines a map of tickers to their respective providers. This
-		// contains all of the providers that are supported per ticker.
-		tickersToProviders = make(map[string]mmtypes.Providers)
-	)
+	markets := make(map[string]mmtypes.Market)
 
-	// Iterate through all of the provider ticker configurations and update the
+	// Iterate through all provider ticker configurations and update the
 	// tickers and tickers to providers maps.
 	for name, providerConfig := range ProviderToMarkets {
-		for ticker, config := range providerConfig {
+		for ticker, cfg := range providerConfig {
 			tickerStr := ticker.String()
 
-			// Add the ticker to the tickers map iff the ticker does not already exist. If the
+			// Add the ticker to the tickers map iff the market does not already exist. If the
 			// ticker already exists, ensure that the ticker configuration is the same.
-			if t, ok := tickers[tickerStr]; !ok {
-				tickers[tickerStr] = ticker
-			} else if t != ticker {
+			if market, ok := markets[tickerStr]; !ok {
+				markets[tickerStr] = mmtypes.Market{
+					Ticker:    ticker,
+					Paths:     mmtypes.Paths{},
+					Providers: mmtypes.Providers{},
+				}
+			} else if market.Ticker != ticker {
 				return fmt.Errorf("ticker %s already exists with different configuration for provider %s", tickerStr, name)
 			}
 
-			// Instantiate the providers for a given ticker.
-			if _, ok := tickersToProviders[tickerStr]; !ok {
-				tickersToProviders[tickerStr] = mmtypes.Providers{}
-			}
-
 			// Add the provider to the tickers to providers map.
-			providers := tickersToProviders[tickerStr].Providers
-			providers = append(providers, config)
-			tickersToProviders[tickerStr] = mmtypes.Providers{Providers: providers}
+			providers := markets[tickerStr].Providers.Providers
+			providers = append(providers, cfg)
+			update := markets[tickerStr]
+			update.Providers = mmtypes.Providers{Providers: providers}
+			markets[tickerStr] = update
 		}
 	}
 
 	// Create a new market map from the provider to market map.
 	marketMap := mmtypes.MarketMap{
-		Tickers:   tickers,
-		Providers: tickersToProviders,
+		Markets: markets,
 	}
 
 	// Validate the market map.
@@ -424,6 +417,6 @@ func createMarketMap() error {
 		return err
 	}
 
-	fmt.Fprintf(os.Stdout, "successfully created market config file at %s\n", *marketCfgPath)
-	return nil
+	_, err = fmt.Fprintf(os.Stdout, "successfully created market config file at %s\n", *marketCfgPath)
+	return err
 }

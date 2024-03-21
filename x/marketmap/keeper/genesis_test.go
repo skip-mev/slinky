@@ -29,20 +29,10 @@ func (s *KeeperTestSuite) TestInitGenesisInvalidGenesis() {
 		gs := types.DefaultGenesisState()
 
 		gs.MarketMap = types.MarketMap{
-			Tickers: map[string]types.Ticker{
-				ethusdt.String(): ethusdt,
-				btcusdt.String(): btcusdt,
-				usdcusd.String(): usdcusd,
-			},
-			Paths: map[string]types.Paths{
-				ethusdt.String(): ethusdtPaths,
-				btcusdt.String(): btcusdtPaths,
-				usdcusd.String(): usdcusdPaths,
-			},
-			Providers: map[string]types.Providers{
-				ethusdt.String(): ethusdtProviders,
-				btcusdt.String(): btcusdtProviders,
-				usdcusd.String(): usdcusdProviders,
+			Markets: map[string]types.Market{
+				ethusdt.Ticker.String(): ethusdt,
+				btcusdt.Ticker.String(): btcusdt,
+				usdcusd.Ticker.String(): usdcusd,
 			},
 		}
 
@@ -66,25 +56,31 @@ func (s *KeeperTestSuite) TestInitGenesisValid() {
 	s.Run("init valid genesis with fields", func() {
 		// first register x/oracle genesis
 		ogs := oracletypes.DefaultGenesisState()
-		ogs.NextId = 3
+		ogs.NextId = 4
 		ogs.CurrencyPairGenesis = []oracletypes.CurrencyPairGenesis{
 			{
-				CurrencyPair:      ethusdt.CurrencyPair,
+				CurrencyPair:      ethusdt.Ticker.CurrencyPair,
 				CurrencyPairPrice: &oracletypes.QuotePrice{Price: sdkmath.NewInt(19)},
 				Nonce:             0,
 				Id:                0,
 			},
 			{
-				CurrencyPair:      btcusdt.CurrencyPair,
+				CurrencyPair:      btcusdt.Ticker.CurrencyPair,
 				CurrencyPairPrice: &oracletypes.QuotePrice{Price: sdkmath.NewInt(19)},
 				Nonce:             0,
 				Id:                1,
 			},
 			{
-				CurrencyPair:      usdcusd.CurrencyPair,
+				CurrencyPair:      usdcusd.Ticker.CurrencyPair,
 				CurrencyPairPrice: nil,
 				Nonce:             0,
 				Id:                2,
+			},
+			{
+				CurrencyPair:      usdtusd.Ticker.CurrencyPair,
+				CurrencyPairPrice: nil,
+				Nonce:             0,
+				Id:                3,
 			},
 		}
 
@@ -94,37 +90,15 @@ func (s *KeeperTestSuite) TestInitGenesisValid() {
 
 		gs := types.DefaultGenesisState()
 		gs.MarketMap = types.MarketMap{
-			Tickers: map[string]types.Ticker{
-				ethusdt.String(): ethusdt,
-				btcusdt.String(): btcusdt,
-				usdcusd.String(): usdcusd,
-			},
-			Paths: map[string]types.Paths{
-				ethusdt.String(): ethusdtPaths,
-				btcusdt.String(): btcusdtPaths,
-				usdcusd.String(): usdcusdPaths,
-			},
-			Providers: map[string]types.Providers{
-				ethusdt.String(): ethusdtProviders,
-				btcusdt.String(): btcusdtProviders,
-				usdcusd.String(): usdcusdProviders,
-			},
+			Markets: markets,
 		}
 
 		s.Require().NotPanics(func() {
 			s.keeper.InitGenesis(s.ctx, *gs)
 		})
 
-		gotTickers, err := s.keeper.GetAllTickersMap(s.ctx)
+		gotMarkets, err := s.keeper.GetAllMarketsMap(s.ctx)
 		s.Require().NoError(err)
-		s.Require().Equal(gs.MarketMap.Tickers, gotTickers)
-
-		gotPaths, err := s.keeper.GetAllPathsMap(s.ctx)
-		s.Require().NoError(err)
-		s.Require().Equal(gs.MarketMap.Paths, gotPaths)
-
-		gotProviders, err := s.keeper.GetAllProvidersMap(s.ctx)
-		s.Require().NoError(err)
-		s.Require().Equal(gs.MarketMap.Providers, gotProviders)
+		s.Require().Equal(gs.MarketMap.Markets, gotMarkets)
 	})
 }

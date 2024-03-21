@@ -15,14 +15,14 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
 		Signer: s.authority.String(),
 		CreateMarkets: []types.Market{
 			{
-				Ticker:    btcusdt,
-				Providers: btcusdtProviders,
-				Paths:     btcusdtPaths,
+				Ticker:    btcusdt.Ticker,
+				Providers: btcusdt.Providers,
+				Paths:     btcusdt.Paths,
 			},
 			{
-				Ticker:    usdtusd,
-				Providers: usdtusdProviders,
-				Paths:     usdtusdPaths,
+				Ticker:    usdtusd.Ticker,
+				Providers: usdtusd.Providers,
+				Paths:     usdtusd.Paths,
 			},
 		},
 	}
@@ -34,23 +34,15 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
 	queryResp, err := qs.MarketMap(s.ctx, &types.GetMarketMapRequest{})
 	s.Require().NoError(err)
 	s.Require().Equal(queryResp.MarketMap, types.MarketMap{
-		Tickers: map[string]types.Ticker{
-			btcusdt.String(): btcusdt,
-			usdtusd.String(): usdtusd,
-		},
-		Paths: map[string]types.Paths{
-			btcusdt.String(): btcusdtPaths,
-			usdtusd.String(): usdtusdPaths,
-		},
-		Providers: map[string]types.Providers{
-			btcusdt.String(): btcusdtProviders,
-			usdtusd.String(): usdtusdProviders,
+		Markets: map[string]types.Market{
+			btcusdt.Ticker.String(): btcusdt,
+			usdtusd.Ticker.String(): usdtusd,
 		},
 	})
 
 	// query the oracle module to see if they were created via hooks
 	cps := s.oracleKeeper.GetAllCurrencyPairs(s.ctx)
-	s.Require().Equal([]slinkytypes.CurrencyPair{btcusdt.CurrencyPair, usdtusd.CurrencyPair}, cps)
+	s.Require().Equal([]slinkytypes.CurrencyPair{btcusdt.Ticker.CurrencyPair, usdtusd.Ticker.CurrencyPair}, cps)
 
 	s.Run("unable to process for invalid authority", func() {
 		msg = &types.MsgCreateMarkets{
@@ -73,9 +65,9 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
 			Signer: s.authority.String(),
 			CreateMarkets: []types.Market{
 				{
-					Ticker:    btcusdt,
-					Providers: btcusdtProviders,
-					Paths:     btcusdtPaths,
+					Ticker:    btcusdt.Ticker,
+					Providers: btcusdt.Providers,
+					Paths:     btcusdt.Paths,
 				},
 			},
 		}
@@ -89,8 +81,8 @@ func (s *KeeperTestSuite) TestMsgServerCreateMarkets() {
 			Signer: s.authority.String(),
 			CreateMarkets: []types.Market{
 				{
-					Ticker:    ethusdt,
-					Providers: ethusdtProviders,
+					Ticker:    ethusdt.Ticker,
+					Providers: ethusdt.Providers,
 					Paths: types.Paths{
 						Paths: []types.Path{
 							{
@@ -128,16 +120,8 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 	createMsg := &types.MsgCreateMarkets{
 		Signer: s.authority.String(),
 		CreateMarkets: []types.Market{
-			{
-				Ticker:    btcusdt,
-				Providers: btcusdtProviders,
-				Paths:     btcusdtPaths,
-			},
-			{
-				Ticker:    usdtusd,
-				Providers: usdtusdProviders,
-				Paths:     usdtusdPaths,
-			},
+			btcusdt,
+			usdtusd,
 		},
 	}
 	createResp, err := msgServer.CreateMarkets(s.ctx, createMsg)
@@ -148,23 +132,15 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 	queryResp, err := qs.MarketMap(s.ctx, &types.GetMarketMapRequest{})
 	s.Require().NoError(err)
 	s.Require().Equal(queryResp.MarketMap, types.MarketMap{
-		Tickers: map[string]types.Ticker{
-			btcusdt.String(): btcusdt,
-			usdtusd.String(): usdtusd,
-		},
-		Paths: map[string]types.Paths{
-			btcusdt.String(): btcusdtPaths,
-			usdtusd.String(): usdtusdPaths,
-		},
-		Providers: map[string]types.Providers{
-			btcusdt.String(): btcusdtProviders,
-			usdtusd.String(): usdtusdProviders,
+		Markets: map[string]types.Market{
+			btcusdt.Ticker.String(): btcusdt,
+			usdtusd.Ticker.String(): usdtusd,
 		},
 	})
 
 	// query the oracle module to see if they were created via hooks
 	cps := s.oracleKeeper.GetAllCurrencyPairs(s.ctx)
-	s.Require().Equal([]slinkytypes.CurrencyPair{btcusdt.CurrencyPair, usdtusd.CurrencyPair}, cps)
+	s.Require().Equal([]slinkytypes.CurrencyPair{btcusdt.Ticker.CurrencyPair, usdtusd.Ticker.CurrencyPair}, cps)
 
 	s.Run("unable to process for invalid authority", func() {
 		msg := &types.MsgUpdateMarkets{
@@ -184,16 +160,12 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 
 	s.Run("able to update market that already exists", func() {
 		tickerUpdate := btcusdt
-		tickerUpdate.Decimals = 1
+		tickerUpdate.Ticker.Decimals = 1
 
 		msg := &types.MsgUpdateMarkets{
 			Signer: s.authority.String(),
 			UpdateMarkets: []types.Market{
-				{
-					Ticker:    tickerUpdate,
-					Providers: btcusdtProviders,
-					Paths:     btcusdtPaths,
-				},
+				tickerUpdate,
 			},
 		}
 		resp, err := msgServer.UpdateMarkets(s.ctx, msg)
@@ -203,10 +175,10 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 
 	s.Run("unable to update when paths refers to non-existent ticker", func() {
 		tickerUpdate := btcusdt
-		tickerUpdate.Decimals = 1
+		tickerUpdate.Ticker.Decimals = 1
 
 		//nolint: gocritic
-		updatePaths := append(btcusdtPaths.Paths, types.Path{
+		updatePaths := append(btcusdt.Paths.Paths, types.Path{
 			Operations: []types.Operation{
 				{
 					CurrencyPair: slinkytypes.CurrencyPair{
@@ -223,8 +195,8 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 			Signer: s.authority.String(),
 			UpdateMarkets: []types.Market{
 				{
-					Ticker:    tickerUpdate,
-					Providers: btcusdtProviders,
+					Ticker:    tickerUpdate.Ticker,
+					Providers: btcusdt.Providers,
 					Paths:     types.Paths{Paths: updatePaths},
 				},
 			},
@@ -238,11 +210,7 @@ func (s *KeeperTestSuite) TestMsgServerUpdateMarkets() {
 		msg := &types.MsgUpdateMarkets{
 			Signer: s.authority.String(),
 			UpdateMarkets: []types.Market{
-				{
-					Ticker:    ethusdt,
-					Providers: ethusdtProviders,
-					Paths:     ethusdtPaths,
-				},
+				ethusdt,
 			},
 		}
 		resp, err := msgServer.UpdateMarkets(s.ctx, msg)
