@@ -1,7 +1,12 @@
 package types
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"strings"
+
+	"golang.org/x/exp/slices"
 )
 
 const (
@@ -60,4 +65,36 @@ func (p *Providers) Equal(other Providers) bool {
 func (pc *ProviderConfig) Equal(other ProviderConfig) bool {
 	return pc.Name == other.Name &&
 		pc.OffChainTicker == other.OffChainTicker
+}
+
+func (p Providers) MarshalJSON() ([]byte, error) {
+	slices.SortFunc(p.Providers, func(i, j ProviderConfig) int {
+		return strings.Compare(i.Name, j.Name)
+	})
+	b := &bytes.Buffer{}
+	_, err := b.WriteString("{\"providers\":[")
+	if err != nil {
+		return nil, err
+	}
+	for i, providerConfig := range p.Providers {
+		pConfigBytes, err := json.Marshal(providerConfig)
+		if err != nil {
+			return nil, err
+		}
+		_, err = b.Write(pConfigBytes)
+		if err != nil {
+			return nil, err
+		}
+		if i < len(p.Providers)-1 {
+			_, err = b.Write([]byte{','})
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+	_, err = b.WriteString("]}")
+	if err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
 }

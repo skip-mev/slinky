@@ -45,7 +45,10 @@ update-local-configs: build
 	@echo "Updating local config..."
 	@./build/config --oracle-config-path ${ORACLE_CONFIG_FILE} --market-config-path ${MARKET_CONFIG_FILE}
 
-start-oracle:
+diff-local-configs: update-local-configs
+	./scripts/diff-local-configs.sh
+
+start-oracle: update-local-config
 	@echo "Starting oracle side-car, blockchain, and prometheus dashboard..."
 	@$(DOCKER_COMPOSE) -f docker-compose.yml up -d
 
