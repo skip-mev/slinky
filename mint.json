@@ -1,0 +1,72 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Skip",
+  "logo": {
+    "light": "/logo/light.png",
+    "dark": "/logo/dark.png"
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#0E0E0E",
+    "light": "#FAFAFA",
+    "dark": "#0E0E0E",
+    "background": {
+      "dark": "#151617"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Products",
+      "url": "https://skip.money/products"
+    },
+    {
+      "name": "Contact",
+      "url": "https://skip.money/contact"
+    },
+    {
+      "name": "Research",
+      "url": "https://ideas.skip.money"
+    },
+    {
+      "name": "Jobs",
+      "url": "https://jobs.skip.money"
+    }
+  ],
+  "modeToggle": {
+    "default": "dark"
+  },
+  "topAnchor": {
+    "name": "Slinky",
+    "icon": "wand-magic-sparkles"
+  },
+  "anchors": [
+    {
+      "name": "Home",
+      "icon": "house",
+      "url": "https://skip.mintlify.app"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Slinky",
+      "pages": [
+        "docs/overview",
+        "docs/security-properties",
+        "docs/incentivize-slashing",
+        {
+          "group": "Validator Docs",
+          "pages": [
+            "docs/validator-docs/quickstart",
+            "docs/validator-docs/validator-config-ref",
+            "docs/validator-docs/slinky-troubleshoot"
+          ]
+        },
+        "docs/upcoming-features"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/skipprotocol",
+    "discord": "https://discord.com/invite/hFeHVAE26P"
+  }
+}
