@@ -34,7 +34,7 @@ import (
 	slinkyabci "github.com/skip-mev/slinky/abci/ve/types"
 	oracleconfig "github.com/skip-mev/slinky/oracle/config"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
@@ -138,6 +138,7 @@ func AddSidecarToNode(node *cosmos.ChainNode, conf ibc.SidecarConfig) {
 }
 
 // spin up the network (with side-cars enabled)
+
 // BuildPOBInterchain creates a new Interchain testing env with the configured POB CosmosChain
 func BuildPOBInterchain(t *testing.T, ctx context.Context, chain ibc.Chain) *interchaintest.Interchain {
 	ic := interchaintest.NewInterchain()
@@ -298,7 +299,7 @@ func QueryCurrencyPair(chain *cosmos.CosmosChain, cp slinkytypes.CurrencyPair, h
 	return res.Price, int64(res.Nonce), nil
 }
 
-// Submit proposal creates and submits a proposal to the chain
+// SubmitProposal creates and submits a proposal to the chain
 func SubmitProposal(chain *cosmos.CosmosChain, deposit sdk.Coin, submitter string, msgs ...sdk.Msg) (string, error) {
 	// build the proposal
 	rand := rand.Str(10)
@@ -344,28 +345,26 @@ func PassProposal(chain *cosmos.CosmosChain, propId string, timeout time.Duratio
 // AddCurrencyPairs creates + submits the proposal to add the given currency-pairs to state, votes for the prop w/ all nodes,
 // and waits for the proposal to pass.
 func (s *SlinkyIntegrationSuite) AddCurrencyPairs(chain *cosmos.CosmosChain, authority, denom string, deposit int64, timeout time.Duration, user cosmos.User, cps ...slinkytypes.CurrencyPair) error {
-	creates := make([]mmtypes.CreateMarket, len(cps))
+	creates := make([]mmtypes.Market, len(cps))
 	for i, cp := range cps {
-		creates[i] = mmtypes.CreateMarket{
+		creates[i] = mmtypes.Market{
 			Ticker: mmtypes.Ticker{
 				CurrencyPair:     cp,
 				Decimals:         8,
 				MinProviderCount: 1,
 				Metadata_JSON:    "",
 			},
-			Providers: mmtypes.Providers{
-				Providers: []mmtypes.ProviderConfig{
-					{
-						Name:           "mexc",
-						OffChainTicker: cp.String(),
-					},
+			ProviderConfigs: []mmtypes.ProviderConfig{
+				{
+					Name:           "mexc",
+					OffChainTicker: cp.String(),
 				},
 			},
 		}
 	}
 
-	msg := &mmtypes.MsgUpdateMarketMap{
-		Signer:        s.user.FormattedAddress(),
+	msg := &mmtypes.MsgCreateMarkets{
+		Authority:     s.user.FormattedAddress(),
 		CreateMarkets: creates,
 	}
 

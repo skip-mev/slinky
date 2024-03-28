@@ -7,15 +7,14 @@ import (
 	"testing"
 	"time"
 
-	providertypes "github.com/skip-mev/slinky/providers/types"
-
 	"github.com/stretchr/testify/require"
 
 	"github.com/skip-mev/slinky/oracle/constants"
 	"github.com/skip-mev/slinky/oracle/types"
 	"github.com/skip-mev/slinky/providers/apis/coinbase"
 	"github.com/skip-mev/slinky/providers/base/testutils"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	providertypes "github.com/skip-mev/slinky/providers/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 var mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
@@ -56,7 +55,7 @@ func TestCreateURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(coinbase.Name, coinbase.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(coinbase.Name, coinbase.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			h, err := coinbase.NewAPIHandler(marketConfig, coinbase.DefaultAPIConfig)
@@ -197,7 +196,7 @@ toms obvious but not minimal language
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(coinbase.Name, coinbase.DefaultMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(coinbase.Name, coinbase.DefaultProviderConfig)
 			require.NoError(t, err)
 
 			h, err := coinbase.NewAPIHandler(marketConfig, coinbase.DefaultAPIConfig)

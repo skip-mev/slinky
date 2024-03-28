@@ -14,7 +14,7 @@ import (
 	"github.com/skip-mev/slinky/providers/apis/binance"
 	"github.com/skip-mev/slinky/providers/base/testutils"
 	providertypes "github.com/skip-mev/slinky/providers/types"
-	mmtypes "github.com/skip-mev/slinky/x/marketmap/types"
+	mmtypes "github.com/skip-mev/slinky/x/mm2/types"
 )
 
 var mogusd = mmtypes.NewTicker("MOG", "USD", 8, 1)
@@ -55,7 +55,7 @@ func TestCreateURL(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(binance.Name, binance.DefaultNonUSMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(binance.Name, binance.DefaultNonUSProviderConfig)
 			require.NoError(t, err)
 
 			h, err := binance.NewAPIHandler(marketConfig, binance.DefaultNonUSAPIConfig)
@@ -108,7 +108,7 @@ func TestCreateURL_US(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(binance.Name, binance.DefaultUSMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(binance.Name, binance.DefaultUSProviderConfig)
 			require.NoError(t, err)
 
 			h, err := binance.NewAPIHandler(marketConfig, binance.DefaultUSAPIConfig)
@@ -244,7 +244,7 @@ func TestParseResponse(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			marketConfig, err := types.NewProviderMarketMap(binance.Name, binance.DefaultUSMarketConfig)
+			marketConfig, err := types.NewProviderMarketMap(binance.Name, binance.DefaultUSProviderConfig)
 			require.NoError(t, err)
 
 			h, err := binance.NewAPIHandler(marketConfig, binance.DefaultNonUSAPIConfig)

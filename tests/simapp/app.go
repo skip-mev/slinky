@@ -23,8 +23,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	testdata_pulsar "github.com/cosmos/cosmos-sdk/testutil/testdata/testpb"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	testdatapulsar "github.com/cosmos/cosmos-sdk/testutil/testdata/testpb"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -72,18 +71,13 @@ import (
 	alertskeeper "github.com/skip-mev/slinky/x/alerts/keeper"
 	"github.com/skip-mev/slinky/x/incentives"
 	incentiveskeeper "github.com/skip-mev/slinky/x/incentives/keeper"
-	marketmapkeeper "github.com/skip-mev/slinky/x/marketmap/keeper"
-	marketmapmodule "github.com/skip-mev/slinky/x/marketmap/module"
+	marketmapmodule "github.com/skip-mev/slinky/x/mm2"
+	marketmapkeeper "github.com/skip-mev/slinky/x/mm2/keeper"
 	"github.com/skip-mev/slinky/x/oracle"
 	oraclekeeper "github.com/skip-mev/slinky/x/oracle/keeper"
 )
 
-const (
-	ChainID = "skip-1"
-)
-
 var (
-	BondDenom = sdk.DefaultBondDenom
 
 	// DefaultNodeHome default home directories for the application daemon.
 	DefaultNodeHome string
@@ -410,7 +404,7 @@ func NewSimApp(
 	// app.RegisterUpgradeHandlers()
 
 	// add test gRPC service for testing gRPC queries in isolation
-	testdata_pulsar.RegisterQueryServer(app.GRPCQueryRouter(), testdata_pulsar.QueryImpl{})
+	testdatapulsar.RegisterQueryServer(app.GRPCQueryRouter(), testdatapulsar.QueryImpl{})
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//
@@ -546,21 +540,4 @@ func GetMaccPerms() map[string][]string {
 	}
 
 	return dup
-}
-
-// BlockedAddresses returns all the app's blocked account addresses.
-func BlockedAddresses() map[string]bool {
-	result := make(map[string]bool)
-
-	if len(blockAccAddrs) > 0 {
-		for _, addr := range blockAccAddrs {
-			result[addr] = true
-		}
-	} else {
-		for addr := range GetMaccPerms() {
-			result[addr] = true
-		}
-	}
-
-	return result
 }
